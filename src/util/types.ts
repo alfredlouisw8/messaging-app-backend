@@ -64,7 +64,7 @@ export type ParticipantPopulated = Prisma.ConversationParticipantGetPayload<{
  */
 
 export interface SendMessageArguments {
-	id: string;
+	// id: string;
 	conversationId: string;
 	senderId: string;
 	body: string;

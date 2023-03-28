@@ -87,7 +87,7 @@ const resolvers = {
 				user: { id: userId },
 			} = session;
 
-			const { id: messageId, senderId, conversationId, body } = args;
+			const { senderId, conversationId, body } = args;
 
 			if (userId !== senderId) {
 				throw new GraphQLError("Not authorized");
@@ -100,13 +100,28 @@ const resolvers = {
 
 				const newMessage = await prisma.message.create({
 					data: {
-						id: messageId,
+						// id: messageId,
 						senderId,
 						conversationId,
 						body,
 					},
 					include: messagePopulated,
 				});
+
+				/**
+				 * Find conversation participant entity
+				 */
+
+				const participant = await prisma.conversationParticipant.findFirst({
+					where: {
+						conversationId,
+						userId,
+					},
+				});
+
+				if (!participant) {
+					throw new GraphQLError("Participant does not exist");
+				}
 
 				/**
 				 * Update conversation entity
@@ -121,7 +136,7 @@ const resolvers = {
 						participants: {
 							update: {
 								where: {
-									id: senderId,
+									id: participant.id,
 								},
 								data: {
 									hasSeenLatestMessage: true,
@@ -130,7 +145,7 @@ const resolvers = {
 							updateMany: {
 								where: {
 									NOT: {
-										userId: senderId,
+										userId,
 									},
 								},
 								data: {
@@ -139,6 +154,7 @@ const resolvers = {
 							},
 						},
 					},
+					include: conversationPopulated,
 				});
 
 				pubsub.publish("MESSAGE_SENT", { messageSent: newMessage });
