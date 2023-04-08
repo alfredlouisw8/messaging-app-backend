@@ -158,11 +158,11 @@ const resolvers = {
 				});
 
 				pubsub.publish("MESSAGE_SENT", { messageSent: newMessage });
-				// pubsub.publish("CONVERSATION_UPDATED", {
-				// 	conversationUpdated: {
-				// 		conversation,
-				// 	},
-				// });
+				pubsub.publish("CONVERSATION_UPDATED", {
+					conversationUpdated: {
+						conversation,
+					},
+				});
 			} catch (error: any) {
 				console.error("sendMessage error", error);
 				throw new GraphQLError("Error sending messages");
