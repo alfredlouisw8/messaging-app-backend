@@ -4,7 +4,8 @@
 	"description": "",
 	"main": "index.js",
 	"scripts": {
-		"dev": "nodemon --delay 500ms src/index.ts"
+		"dev": "nodemon --delay 500ms src/index.ts",
+		"start": "node src/index.ts"
 	},
 	"keywords": [],
 	"author": "",
